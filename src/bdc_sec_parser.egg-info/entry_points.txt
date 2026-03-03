@@ -1,0 +1,2 @@
+[console_scripts]
+bdc-sched = bdc_sched.cli:main

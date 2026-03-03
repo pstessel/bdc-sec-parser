@@ -1,0 +1,7 @@
+bdcs:
+  - ticker: ARCC
+    cik: "0001287750"
+  - ticker: OCSL
+    cik: "0001415404"
+  - ticker: MAIN
+    cik: "0001396440"

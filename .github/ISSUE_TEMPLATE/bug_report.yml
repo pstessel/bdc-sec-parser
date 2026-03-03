@@ -1,0 +1,77 @@
+name: Bug report
+description: Report a reproducible defect in parsing, normalization, QA, or outputs.
+title: "bug: <short summary>"
+labels: ["type:bug", "triage"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - fetch
+        - download
+        - parse
+        - normalize
+        - qa
+        - schema/validate
+        - docs
+    validations:
+      required: true
+
+  - type: input
+    id: filing
+    attributes:
+      label: Filing / sample
+      description: Include ticker + accession, e.g. 0001287750-21-000035
+      placeholder: "ARCC / 0001287750-21-000035"
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1) Run command ...
+        2) Open file ...
+        3) Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Clear pass/fail checks for this ticket.
+      placeholder: |
+        - [ ] Added regression fixture
+        - [ ] Test fails before fix and passes after
+        - [ ] No schema regressions on validation
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and risk
+      description: Data quality impact (e.g., wrong fair value, mixed current/prior period)
+
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Artifacts / evidence
+      description: Attach row samples, screenshots, output paths, and logs

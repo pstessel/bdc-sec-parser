@@ -1,0 +1,76 @@
+name: Layout mapping ticket
+description: Add or improve layout-specific mapping rules for unknown schedule structures.
+title: "layout: <ticker/form/layout signature>"
+labels: ["type:layout", "quality", "triage"]
+body:
+  - type: input
+    id: ticker
+    attributes:
+      label: Ticker
+      placeholder: ARCC
+    validations:
+      required: true
+
+  - type: dropdown
+    id: form
+    attributes:
+      label: SEC form
+      options:
+        - 10-Q
+        - 10-K
+        - 10-Q/A
+        - 10-K/A
+    validations:
+      required: true
+
+  - type: input
+    id: accession
+    attributes:
+      label: Representative accession
+      placeholder: 0001287750-21-000035
+    validations:
+      required: true
+
+  - type: textarea
+    id: header
+    attributes:
+      label: Header/sub-header shape
+      description: Include header rows and sector/sub-header context (e.g., Software & Services)
+    validations:
+      required: true
+
+  - type: textarea
+    id: mapping
+    attributes:
+      label: Required mapping
+      placeholder: |
+        issuer_name -> col 0
+        business_description -> col 1
+        instrument_text -> col 2
+        rate_spread_pik -> col 3
+        acquisition_date -> col 4
+        amortized_cost -> col 5
+        fair_value -> col 6
+        pct_net_assets -> col 7
+        industry_group -> sub-header row above company entries
+    validations:
+      required: true
+
+  - type: textarea
+    id: period
+    attributes:
+      label: Period semantics
+      description: Identify current vs prior/comparative columns explicitly.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Unknown bucket reduced for this layout
+        - [ ] business_description captured
+        - [ ] industry_group captured
+        - [ ] current/prior columns not mixed
+        - [ ] regression fixture added
+    validations:
+      required: true
