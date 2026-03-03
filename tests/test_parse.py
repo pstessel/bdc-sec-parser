@@ -4,7 +4,19 @@ from bdc_sched.parse.detect import find_candidate_tables
 from bdc_sched.parse.schedule import parse_filing_file, parse_money, parse_schedule_rows
 
 
-FIXTURE = Path(__file__).parent / "fixtures" / "sample_filing.html"
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+FIXTURE = FIXTURES_DIR / "sample_filing.html"
+FIXTURE_MERGED_HEADERS = FIXTURES_DIR / "schedule_merged_headers.html"
+FIXTURE_SPARSE_NUMERIC = FIXTURES_DIR / "schedule_sparse_numeric_rows.html"
+FIXTURE_FOOTNOTES = FIXTURES_DIR / "schedule_with_footnotes.html"
+
+BASE_META = {
+    "ticker": "TST",
+    "cik": "0000000000",
+    "accessionNo": "0000000000-00-000001",
+    "filingDate": "2026-03-03",
+    "form": "10-Q",
+}
 
 
 def test_heading_detection_finds_table():
@@ -83,3 +95,37 @@ def test_regression_heading_with_all_tables_rejected_uses_fallback():
     assert rows
     assert all(r.get("filter_fallback") is True for r in rows)
     assert all(r.get("heading") == "Consolidated Schedule of Investments" for r in rows)
+
+
+def test_fixture_merged_headers_table_kept_and_data_row_present():
+    html = FIXTURE_MERGED_HEADERS.read_text(encoding="utf-8")
+
+    rows = parse_schedule_rows(html, BASE_META)
+
+    assert rows
+    assert any("Acme Software Holdings" in r["raw_row_text"] for r in rows)
+    assert any((r.get("numeric_count") or 0) >= 2 for r in rows)
+
+
+def test_fixture_sparse_numeric_rows_not_dropped():
+    html = FIXTURE_SPARSE_NUMERIC.read_text(encoding="utf-8")
+
+    rows = parse_schedule_rows(html, BASE_META)
+
+    assert rows
+    assert any("No Current Interest" in r["raw_row_text"] for r in rows)
+    assert any("Lighthouse Credit" in r["raw_row_text"] for r in rows)
+
+
+def test_fixture_footnote_markers_still_parses_numeric_values():
+    html = FIXTURE_FOOTNOTES.read_text(encoding="utf-8")
+
+    rows = parse_schedule_rows(html, BASE_META)
+
+    assert rows
+    target = [r for r in rows if "Beacon Mobility" in r["raw_row_text"]]
+    assert target
+    # Numeric parsing should ignore footnote markers like (1), (2), (a).
+    assert target[0].get("numeric_1") == 1500.0
+    assert target[0].get("numeric_2") == 1487.0
+    assert target[0].get("numeric_3") == 1522.0
