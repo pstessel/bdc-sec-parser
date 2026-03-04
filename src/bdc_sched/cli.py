@@ -234,7 +234,8 @@ def cmd_validate(args):
     if report.get("status") == "ok":
         print(
             f"schema ok: kind={report['kind']} rows={report['rows']} "
-            f"missing_columns={len(report['missing_columns'])}"
+            f"missing_columns={len(report['missing_columns'])} "
+            f"type_mismatches={len(report.get('type_mismatches', {}))}"
         )
         return
 
@@ -244,7 +245,8 @@ def cmd_validate(args):
     else:
         print(
             f"schema validation failed: kind={report.get('kind')} "
-            f"missing_columns={report.get('missing_columns', [])}"
+            f"missing_columns={report.get('missing_columns', [])} "
+            f"type_mismatches={report.get('type_mismatches', {})}"
         )
 
 
