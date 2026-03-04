@@ -33,21 +33,47 @@ bdc-sched validate --kind normalized --input out/normalized/investments.csv
   - per filing CSV: `out/parsed/<ticker>/<accession>.csv`
   - consolidated CSV: `out/parsed/all_rows.csv`
   - optional parquet: `out/parsed/all_rows.parquet` (auto-skipped if parquet engine missing)
+  - run manifest JSON: `out/parsed/parse_run_manifest.json`
+  - adds run metadata columns to every row: `run_id`, `generated_at`, `parser_version`
 - `qa`:
   - JSON report: `out/parsed/qa_report.json`
   - summary printed: empty-row %, numeric-zero %, duplicate key count, flagged filings
 - `normalize`:
   - normalized CSV: `out/normalized/investments.csv`
   - optional parquet: `out/normalized/investments.parquet`
+  - run manifest JSON: `out/normalized/normalize_run_manifest.json`
   - defaults: `--min-confidence 0.4 --drop-headers`
   - pipe-delimited cell artifacts are split/cleaned into normalized cell arrays
   - emits `layout_id`, `period_focus`, `has_pipe_artifacts`, `clean_row_text`
+  - adds run metadata columns to every row: `run_id`, `generated_at`, `parser_version`
 - `validate`:
   - schema check for parsed/normalized outputs
+  - enforces both required columns and strict logical types
   - optional JSON output report via `--out`
+  - failure output includes `missing_columns` and `type_mismatches`
 - `profile-layouts`:
   - layout summary CSV: `out/normalized/layout_profile.csv`
   - groups by `ticker/form/layout_id/period_focus` with row counts and confidence stats
+
+## Validation and run metadata quick examples
+
+```bash
+# Validate parsed output
+bdc-sched validate --kind parsed --input out/parsed/all_rows.csv
+
+# Validate normalized output and write machine-readable report
+bdc-sched validate --kind normalized --input out/normalized/investments.csv --out out/normalized/schema_report.json
+```
+
+`validate` returns a summary with:
+- `missing_columns`: required columns not found
+- `type_mismatches`: columns present but wrong dtype (example: string in an int/bool field)
+
+Run manifests:
+- `out/parsed/parse_run_manifest.json`
+- `out/normalized/normalize_run_manifest.json`
+
+Each manifest includes `run_id`, `generated_at`, `parser_version`, plus input/output paths and row counts.
 
 ## Project management
 
