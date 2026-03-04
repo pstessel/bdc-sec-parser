@@ -56,6 +56,17 @@ def _new_run_metadata(prefix: str) -> dict[str, str]:
     }
 
 
+def _write_run_manifest(out_dir: Path, stage: str, run_meta: dict[str, str], payload: dict) -> Path:
+    manifest = {
+        "stage": stage,
+        **run_meta,
+        **payload,
+    }
+    out_path = out_dir / f"{stage}_run_manifest.json"
+    out_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    return out_path
+
+
 def cmd_fetch(args):
     settings = load_settings()
     client = SecClient(settings.sec_user_agent, settings.sec_requests_per_sec)
@@ -173,12 +184,33 @@ def cmd_parse(args):
     all_df = rows_to_dataframe(all_rows)
     all_df.to_csv(all_csv, index=False)
 
+    parquet_path = out_dir / "all_rows.parquet"
+    parquet_written = False
     if args.parquet:
-        maybe_write_parquet(all_df, out_dir / "all_rows.parquet")
+        parquet_written = maybe_write_parquet(all_df, parquet_path)
+
+    manifest_path = _write_run_manifest(
+        out_dir,
+        "parse",
+        run_meta,
+        {
+            "input": {
+                "raw_dir": str(raw_dir),
+                "manifest_dir": str(manifest_dir),
+                "files_considered": len(html_files),
+            },
+            "output": {
+                "all_rows_csv": str(all_csv),
+                "all_rows_parquet": str(parquet_path) if parquet_written else None,
+                "rows": int(len(all_rows)),
+                "parsed_files": int(parsed_files),
+            },
+        },
+    )
 
     print(
         f"parsed {parsed_files} filing(s), wrote {len(all_rows)} total rows to {all_csv} "
-        f"run_id={run_meta['run_id']}"
+        f"run_id={run_meta['run_id']} manifest={manifest_path}"
     )
 
 
@@ -236,10 +268,33 @@ def cmd_normalize(args):
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     norm_df.to_csv(out_csv, index=False)
 
+    parquet_path = out_csv.with_suffix(".parquet")
+    parquet_written = False
     if args.parquet:
-        maybe_write_parquet(norm_df, out_csv.with_suffix(".parquet"))
+        parquet_written = maybe_write_parquet(norm_df, parquet_path)
 
-    print(f"normalized {len(norm_df)} rows to {out_csv} run_id={run_meta['run_id']}")
+    manifest_path = _write_run_manifest(
+        out_csv.parent,
+        "normalize",
+        run_meta,
+        {
+            "input": {
+                "parsed_csv": str(src),
+                "min_confidence": args.min_confidence,
+                "drop_headers": bool(args.drop_headers),
+            },
+            "output": {
+                "normalized_csv": str(out_csv),
+                "normalized_parquet": str(parquet_path) if parquet_written else None,
+                "rows": int(len(norm_df)),
+            },
+        },
+    )
+
+    print(
+        f"normalized {len(norm_df)} rows to {out_csv} run_id={run_meta['run_id']} "
+        f"manifest={manifest_path}"
+    )
 
 
 def cmd_validate(args):
