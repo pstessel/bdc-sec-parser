@@ -79,6 +79,7 @@ Each manifest includes `run_id`, `generated_at`, `parser_version`, plus input/ou
 
 - Ticketing workflow: `docs/TICKETING.md`
 - Accuracy / verification runbook: `docs/ACCURACY_PLAYBOOK.md`
+- Benchmark guide (gold set + scoring): `docs/BENCHMARK.md`
 - Issue forms: `.github/ISSUE_TEMPLATE/`
 
 ## Parser notes
