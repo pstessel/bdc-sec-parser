@@ -74,6 +74,14 @@ def _extract_business_description(cells: list[str], layout_id: str) -> str | Non
     return None
 
 
+def _extract_instrument_text(cells: list[str], layout_id: str) -> str | None:
+    # ARCC/MAIN dominant layouts generally place investment/instrument text in col 3.
+    if layout_id in {"arcc_sched_v1", "main_sched_v1"} and len(cells) >= 3:
+        c = str(cells[2]).strip()
+        return c or None
+    return None
+
+
 def _extract_industry_group(cells: list[str], is_header_like: bool, numeric_count: int) -> str | None:
     # Best-effort: header-like row with little/no numeric data and short text often indicates group bucket.
     if not is_header_like or numeric_count > 0:
@@ -232,6 +240,7 @@ def normalize_rows_to_investments(df: pd.DataFrame) -> pd.DataFrame:
                 "row_index": row.get("row_index"),
                 "issuer_name": _extract_issuer(cells, raw),
                 "business_description": _extract_business_description(cells, final_layout),
+                "instrument_text": _extract_instrument_text(cells, final_layout),
                 "industry_group": _extract_industry_group(cells, is_header_like, numeric_count),
                 "raw_row_text": raw,
                 "clean_row_text": " ; ".join(cells),

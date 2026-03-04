@@ -1,2 +1,2 @@
-ticker,accessionNo,table_index,row_index,issuer_name,principal_estimate,cost_estimate,fair_value_estimate,business_description,industry_group,period_focus
-ARCC,REPLACE_ACCESSION,0,0,REPLACE,0,0,0,REPLACE,REPLACE,current
+ticker,accessionNo,table_index,row_index,issuer_name,principal_estimate,cost_estimate,fair_value_estimate,business_description,instrument_text,industry_group,period_focus
+ARCC,REPLACE_ACCESSION,0,0,REPLACE,0,0,0,REPLACE,REPLACE,REPLACE,current

@@ -104,3 +104,44 @@ Status legend: `todo | in-progress | blocked | done`
   - [ ] Snapshot report written each run
   - [ ] Includes total rows, unknown rows, unknown % by ticker/form
   - [ ] PM update can reference trend automatically
+
+## BDC-011 — Multi-issuer accuracy benchmark (gold set + scorecard)
+- **Type:** task
+- **Priority:** p0
+- **Status:** todo
+- **Scope:** Create a ground-truth benchmark across multiple BDC issuers and filings to measure numeric extraction accuracy explicitly (not just schema validity).
+- **Definition (plain English):**
+  - Build a labeled "answer key" dataset (gold set), run parser output against it, and report exact hit/miss rates per field.
+- **Milestone shape (phase 1):**
+  - 5 issuers × 2 filings each (mix of 10-Q / 10-K) as initial benchmark cohort
+  - Label core fields: `issuer_name`, `principal_estimate`, `cost_estimate`, `fair_value_estimate`, `business_description`, `industry_group`, `period_focus`
+- **Acceptance criteria:**
+  - [ ] Gold-set folder committed with labeling guide + labeled reference CSV/JSON
+  - [ ] Scoring script implemented (`precision/recall` for categorical fields, numeric match/error metrics for amounts)
+  - [ ] Output scorecard generated with per-field metrics and overall pass/fail thresholds
+  - [ ] CI/test hook fails when benchmark falls below thresholds
+  - [ ] README updated with how to run and interpret benchmark
+  - [ ] Initial baseline report attached (so future changes can be compared)
+
+## BDC-012 — Terminology cleanup: replace “heuristics” with “rule-based extraction” in user-facing docs
+- **Type:** task
+- **Priority:** p2
+- **Status:** todo
+- **Scope:** Update user-facing wording to avoid implying guesswork where deterministic rules are used.
+- **Acceptance criteria:**
+  - [ ] README and docs replace ambiguous wording where appropriate
+  - [ ] One short section explains limits clearly: deterministic rules + measured benchmark accuracy
+
+## BDC-013 — Expand benchmark + extraction coverage for investment/instrument fields
+- **Type:** task
+- **Priority:** p0
+- **Status:** todo
+- **Scope:** Capture and score investment-type text fields (for example ARCC `Investment` values like “First Lien Senior Secured Loan”) so subscriber-facing reports include richer instrument detail with measured accuracy.
+- **Why:** Current phase-1 benchmark scores 7 core fields but does not yet quantify instrument/investment text quality.
+- **Acceptance criteria:**
+  - [ ] Normalized output includes first-class `instrument_text` field (or equivalent canonical field) where available
+  - [ ] Benchmark gold schema extended with `instrument_text` and scoring logic added
+  - [ ] Baseline score reported for `instrument_text` (exact + normalized text match policy documented)
+  - [ ] Optional normalized derivatives defined and tested (`lien_rank`, `security_type`, `secured_flag`)
+  - [ ] At least 3 issuers validated for instrument/investment extraction quality
+  - [ ] Reporting docs updated to show how this field is used in subscriber outputs

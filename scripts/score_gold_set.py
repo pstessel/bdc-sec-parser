@@ -10,7 +10,7 @@ import pandas as pd
 
 KEYS = ["ticker", "accessionNo", "table_index", "row_index"]
 NUM_FIELDS = ["principal_estimate", "cost_estimate", "fair_value_estimate"]
-TXT_FIELDS = ["issuer_name", "business_description", "industry_group", "period_focus"]
+TXT_FIELDS = ["issuer_name", "business_description", "instrument_text", "industry_group", "period_focus"]
 
 
 def norm_text(v) -> str:

@@ -18,6 +18,7 @@ Start small and concrete:
   - `cost_estimate`
   - `fair_value_estimate`
   - `business_description`
+  - `instrument_text`
   - `industry_group`
   - `period_focus`
 
@@ -31,12 +32,29 @@ Each row must include primary keys:
 
 And expected values for the fields above.
 
+## Fast labeling workflow
+
+```bash
+# 1) Build candidate rows first (see project notes), then create reviewer workfile
+python scripts/prepare_gold_workfile.py \
+  --in benchmarks/gold_label_candidates.csv \
+  --out benchmarks/gold_label_work.csv
+
+# 2) Review/edit `gold_*` columns and mark `review_status=done`
+
+# 3) Finalize scored gold file
+python scripts/finalize_gold_from_workfile.py \
+  --work benchmarks/gold_label_work.csv \
+  --out benchmarks/gold_set_phase1.csv \
+  --only-reviewed
+```
+
 ## Run scoring
 
 ```bash
 python scripts/score_gold_set.py \
   --pred out/normalized/investments.csv \
-  --gold benchmarks/gold_set_phase1_template.csv \
+  --gold benchmarks/gold_set_phase1.csv \
   --out reports/accuracy/benchmark_phase1.json
 ```
 

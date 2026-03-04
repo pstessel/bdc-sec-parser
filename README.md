@@ -45,6 +45,7 @@ bdc-sched validate --kind normalized --input out/normalized/investments.csv
   - defaults: `--min-confidence 0.4 --drop-headers`
   - pipe-delimited cell artifacts are split/cleaned into normalized cell arrays
   - emits `layout_id`, `period_focus`, `has_pipe_artifacts`, `clean_row_text`
+  - includes extracted descriptive fields: `business_description`, `instrument_text`, `industry_group`
   - adds run metadata columns to every row: `run_id`, `generated_at`, `parser_version`
 - `validate`:
   - schema check for parsed/normalized outputs
