@@ -30,6 +30,13 @@ bdc-sched validate --kind parsed --input out/parsed/all_rows.csv
 bdc-sched validate --kind normalized --input out/normalized/investments.csv
 ```
 
+Or use the one-shot evidence runner (auto-writes logs + summary markdown):
+
+```bash
+chmod +x scripts/run_accuracy_evidence.sh
+./scripts/run_accuracy_evidence.sh
+```
+
 Expected:
 - tests all green
 - validate returns `schema ok`
@@ -67,6 +74,19 @@ For each sampled filing:
 
 ## Goal
 Provide a neutral second-opinion run that reproduces scoring without relying on this session.
+
+### One-command handoff packaging
+
+```bash
+chmod +x scripts/package_independent_handoff.sh
+./scripts/package_independent_handoff.sh
+```
+
+This creates:
+- `reports/accuracy/handoff_<timestamp>_<sha>/`
+- `reports/accuracy/handoff_<timestamp>_<sha>.zip`
+
+with the latest evidence logs/artifacts, manifests, QA report, playbook, and a ready-to-use handoff prompt.
 
 ### Handoff package contents
 
