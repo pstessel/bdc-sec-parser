@@ -14,6 +14,9 @@ PARSED_REQUIRED_COLUMNS = [
     "raw_row_text",
     "cells_json",
     "numeric_count",
+    "run_id",
+    "generated_at",
+    "parser_version",
 ]
 
 NORMALIZED_REQUIRED_COLUMNS = [
@@ -29,6 +32,9 @@ NORMALIZED_REQUIRED_COLUMNS = [
     "is_total_row",
     "is_header_like",
     "confidence",
+    "run_id",
+    "generated_at",
+    "parser_version",
 ]
 
 
@@ -48,6 +54,9 @@ SCHEMA_TYPES: dict[str, dict[str, str]] = {
         "raw_row_text": "string",
         "cells_json": "string",
         "numeric_count": "int",
+        "run_id": "string",
+        "generated_at": "string",
+        "parser_version": "string",
     },
     "normalized": {
         "ticker": "string",
@@ -62,6 +71,9 @@ SCHEMA_TYPES: dict[str, dict[str, str]] = {
         "is_total_row": "bool",
         "is_header_like": "bool",
         "confidence": "number",
+        "run_id": "string",
+        "generated_at": "string",
+        "parser_version": "string",
     },
 }
 

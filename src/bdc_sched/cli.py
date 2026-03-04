@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from uuid import uuid4
 
 import yaml
 
+from bdc_sched import __version__ as parser_version
 from bdc_sched.config import load_settings
 from bdc_sched.io.export_csv import maybe_write_parquet, rows_to_csv, rows_to_dataframe
 from bdc_sched.io.manifests import load_manifest, save_manifest
@@ -44,6 +46,14 @@ def _build_metadata_index(manifest_dir: Path) -> dict[tuple[str, str], dict]:
             key = (str(row.get("ticker", "")).upper(), str(row.get("accessionNo", "")))
             idx[key] = row
     return idx
+
+
+def _new_run_metadata(prefix: str) -> dict[str, str]:
+    return {
+        "run_id": f"{prefix}_{uuid4().hex[:12]}",
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "parser_version": parser_version,
+    }
 
 
 def cmd_fetch(args):
@@ -124,6 +134,7 @@ def cmd_parse(args):
     manifest_dir = Path(args.manifests)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    run_meta = _new_run_metadata("parse")
     metadata_index = _build_metadata_index(manifest_dir)
 
     html_files = sorted(raw_dir.glob("*/*.html"))
@@ -150,6 +161,8 @@ def cmd_parse(args):
             print(f"parse failed for {html_path}: {exc}")
             continue
 
+        rows = [{**r, **run_meta} for r in rows]
+
         parsed_files += 1
         per_file_out = out_dir / ticker / f"{accession}.csv"
         rows_to_csv(rows, per_file_out)
@@ -163,7 +176,10 @@ def cmd_parse(args):
     if args.parquet:
         maybe_write_parquet(all_df, out_dir / "all_rows.parquet")
 
-    print(f"parsed {parsed_files} filing(s), wrote {len(all_rows)} total rows to {all_csv}")
+    print(
+        f"parsed {parsed_files} filing(s), wrote {len(all_rows)} total rows to {all_csv} "
+        f"run_id={run_meta['run_id']}"
+    )
 
 
 def cmd_qa(args):
@@ -203,6 +219,7 @@ def cmd_normalize(args):
 
     import pandas as pd
 
+    run_meta = _new_run_metadata("normalize")
     raw_df = pd.read_csv(src)
     norm_df = normalize_rows_to_investments(raw_df)
 
@@ -212,6 +229,9 @@ def cmd_normalize(args):
     if args.drop_headers:
         norm_df = norm_df[~norm_df["is_header_like"]]
 
+    for k, v in run_meta.items():
+        norm_df[k] = v
+
     out_csv = Path(args.out)
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     norm_df.to_csv(out_csv, index=False)
@@ -219,7 +239,7 @@ def cmd_normalize(args):
     if args.parquet:
         maybe_write_parquet(norm_df, out_csv.with_suffix(".parquet"))
 
-    print(f"normalized {len(norm_df)} rows to {out_csv}")
+    print(f"normalized {len(norm_df)} rows to {out_csv} run_id={run_meta['run_id']}")
 
 
 def cmd_validate(args):

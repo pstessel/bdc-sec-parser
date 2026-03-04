@@ -16,6 +16,9 @@ def test_validate_parsed_schema_ok():
                 "raw_row_text": "Foo | 100 | 120",
                 "cells_json": '["Foo","100","120"]',
                 "numeric_count": 2,
+                "run_id": "parse_abc123",
+                "generated_at": "2026-03-04T00:00:00Z",
+                "parser_version": "0.1.0",
             }
         ]
     )
@@ -40,6 +43,9 @@ def test_validate_normalized_schema_missing_confidence():
                 "fair_value_estimate": 120.0,
                 "is_total_row": False,
                 "is_header_like": False,
+                "run_id": "normalize_abc123",
+                "generated_at": "2026-03-04T00:00:00Z",
+                "parser_version": "0.1.0",
             }
         ]
     )
@@ -60,6 +66,9 @@ def test_validate_parsed_schema_type_mismatch_fails():
                 "raw_row_text": "Foo | 100 | 120",
                 "cells_json": '["Foo","100","120"]',
                 "numeric_count": "2",
+                "run_id": "parse_abc123",
+                "generated_at": "2026-03-04T00:00:00Z",
+                "parser_version": "0.1.0",
             }
         ]
     )
@@ -86,6 +95,9 @@ def test_validate_normalized_schema_bool_type_mismatch_fails():
                 "is_total_row": "False",
                 "is_header_like": "False",
                 "confidence": 0.91,
+                "run_id": "normalize_abc123",
+                "generated_at": "2026-03-04T00:00:00Z",
+                "parser_version": "0.1.0",
             }
         ]
     )
